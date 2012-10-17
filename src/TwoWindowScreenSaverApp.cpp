@@ -7,9 +7,9 @@
 #pragma comment(lib, "comctl32.lib")
 // Link to the correct library based on the unicode setting.
 #ifdef UNICODE
-  #pragma comment(lib, "ScrnSavw.lib")
+#pragma comment(lib, "ScrnSavw.lib")
 #else
-  #pragma comment(lib, "ScrnSave.lib")
+#pragma comment(lib, "ScrnSave.lib")
 #endif
 
 using namespace std;
@@ -17,15 +17,15 @@ using namespace ci;
 using namespace ci::app;
 
 class TwoWindowScreenSaverApp : public AppScreenSaver {
- public:
-	virtual void setup();
-	virtual void update();
-	virtual void draw();
+public:
+  virtual void setup();
+  virtual void update();
+  virtual void draw();
   virtual void resize( ResizeEvent event );
-	
- protected:
-	ci::Color	mColor, mBackgroundColor;
-	float		mRadius;
+
+protected:
+  ci::Color	mColor, mBackgroundColor;
+  float		mRadius;
   bool mHasTwoDisplays;
   bool mIsFirstResize;
   ci::Area mMainArea;
@@ -35,12 +35,12 @@ class TwoWindowScreenSaverApp : public AppScreenSaver {
 
 void TwoWindowScreenSaverApp::setup()
 {
-	mColor = Color( 1.0f, 0.5f, 0.25f );
-	mBackgroundColor = Color( 0.25f, 0.0f, 0.0f );
+  mColor = Color( 1.0f, 0.5f, 0.25f );
+  mBackgroundColor = Color( 0.25f, 0.0f, 0.0f );
 
   mIsFirstResize = true; // Need a flag for handling the first resize
   mHasTwoDisplays = false; // Need a flag for determining if we've got two displays
-  
+
   if(ci::Display::getDisplays().size() > 1) {
     mHasTwoDisplays = true;
   }
@@ -60,28 +60,28 @@ void TwoWindowScreenSaverApp::resize( ResizeEvent event )
         mHasTwoDisplays = false;
       }
     }
-    
+
     ci::Area mainDisplayArea = ci::Display::getMainDisplay()->getArea();
 
     if(mHasTwoDisplays) {
-      
+
       // First, we stick our primary window over into the main display area.
       ::SetWindowPos( ((RendererGl *)getRenderer())->getHwnd(), 
-                      HWND_TOPMOST, 
-                      mainDisplayArea.getX1(), mainDisplayArea.getY1(),
-                      mainDisplayArea.getWidth(), mainDisplayArea.getHeight(),
-                      SWP_SHOWWINDOW);
+        HWND_TOPMOST, 
+        mainDisplayArea.getX1(), mainDisplayArea.getY1(),
+        mainDisplayArea.getWidth(), mainDisplayArea.getHeight(),
+        SWP_SHOWWINDOW);
 
       // Need to resize the GL viewport to accomodate the new size.
-	    glViewport( 0, 0, mainDisplayArea.getWidth(), mainDisplayArea.getHeight());
-	    cinder::CameraPersp cam( mainDisplayArea.getWidth(), mainDisplayArea.getHeight(), 60.0f );
-	    glMatrixMode( GL_PROJECTION );
-	    glLoadMatrixf( cam.getProjectionMatrix().m );
+      glViewport( 0, 0, mainDisplayArea.getWidth(), mainDisplayArea.getHeight());
+      cinder::CameraPersp cam( mainDisplayArea.getWidth(), mainDisplayArea.getHeight(), 60.0f );
+      glMatrixMode( GL_PROJECTION );
+      glLoadMatrixf( cam.getProjectionMatrix().m );
 
-	    glMatrixMode( GL_MODELVIEW );
-	    glLoadMatrixf( cam.getModelViewMatrix().m );
-	    glScalef( 1.0f, -1.0f, 1.0f ); // invert Y axis so increasing Y goes down.
-	    glTranslatef( 0.0f, (float) - mainDisplayArea.getHeight(), 0.0f ); // shift origin up to upper-left corner.
+      glMatrixMode( GL_MODELVIEW );
+      glLoadMatrixf( cam.getModelViewMatrix().m );
+      glScalef( 1.0f, -1.0f, 1.0f ); // invert Y axis so increasing Y goes down.
+      glTranslatef( 0.0f, (float) - mainDisplayArea.getHeight(), 0.0f ); // shift origin up to upper-left corner.
       // Done with the new viewport and translation stuff.
 
       mainDisplayArea = ci::Display::getMainDisplay()->getArea();
@@ -102,7 +102,7 @@ void TwoWindowScreenSaverApp::resize( ResizeEvent event )
         }
         displayNum++;
       }
-      
+
       // Set up the new Window struct
       WNDCLASS scl;
       LPCWSTR szCWinName = TEXT("Screen Saver Second Screen");
@@ -112,7 +112,7 @@ void TwoWindowScreenSaverApp::resize( ResizeEvent event )
       if(!instance) {
         console() << "No HINSTANCE exists." << endl;
       }
-      
+
       scl.hInstance = instance;
       scl.lpszClassName = szCClassName;
       scl.lpfnWndProc = DefWindowProc;
@@ -123,7 +123,7 @@ void TwoWindowScreenSaverApp::resize( ResizeEvent event )
       scl.cbClsExtra = 0;
       scl.cbWndExtra = 0;
       scl.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); // Making the background black
-      
+
       if(! RegisterClass(&scl)) {
         console() << "There was an error registering our new window class" << endl;
       }
@@ -150,11 +150,11 @@ void TwoWindowScreenSaverApp::resize( ResizeEvent event )
       ::ShowWindow( secondWnd, SW_SHOW );
       ::UpdateWindow( secondWnd );
       ::SetWindowPos( secondWnd, 
-                      HWND_TOPMOST, 
-                      secondArea.getX1(), secondArea.getY1(),
-                      secondArea.getWidth(), secondArea.getHeight(),
-                      SWP_SHOWWINDOW);
-      
+        HWND_TOPMOST, 
+        secondArea.getX1(), secondArea.getY1(),
+        secondArea.getWidth(), secondArea.getHeight(),
+        SWP_SHOWWINDOW);
+
     } else {
 
       // Not doing two displays, so we want to count on the normal
@@ -174,13 +174,13 @@ void TwoWindowScreenSaverApp::resize( ResizeEvent event )
 
 void TwoWindowScreenSaverApp::update()
 {
-	mRadius = abs( cos( getElapsedSeconds() ) * 200 );
+  mRadius = abs( cos( getElapsedSeconds() ) * 200 );
 }
 
 void TwoWindowScreenSaverApp::draw()
 {
-	gl::clear( mBackgroundColor );
-	glColor3f( mColor );
+  gl::clear( mBackgroundColor );
+  glColor3f( mColor );
 
   // General getWindowCenter() doesn't work anymore because that
   // calculation is done before our resize stuff happens. This is
