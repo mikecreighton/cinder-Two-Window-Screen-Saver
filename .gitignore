@@ -10,3 +10,13 @@
 *.lai
 *.la
 *.a
+
+# Windows Visual Studio stuff
+*.suo
+*.ncb
+*.sdf
+*.opensdf
+*.vcxproj.user
+Debug/
+Release/
+ipch/
